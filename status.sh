@@ -2,25 +2,28 @@
 
 scrps_path=/root
 
-info_web="= Web-server =
+info_web="*Services*
 ----------------------
-$(service apache2 status | egrep -i 'active|tasks|memory')
+Apache2:
+$(systemctl status apache2 | egrep -i 'active|tasks|memory' | awk '{print$1,$2,$9,$10}')
+Asterisk:
+$(systemctl status asterisk | egrep -i 'active|tasks|memory' | awk '{print$1,$2,$9,$10}')
 
 "
 
-info_cpu="= CPU =
+info_cpu="*CPU*
 ----------------------
 $(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1" of 100 percents"}')
 
 "
 
-info_ram="= RAM =
+info_ram="*RAM*
 ----------------------
 free: $(free -m | grep Mem | awk '{print $4}') MB of $(free -m | grep Mem | awk '{print $2}') MB total
 
 "
 
-info_space="= HDD =
+info_space="*HDD*
 ----------------------
 $(df -h --output=source,size,used,avail | grep dev)
 

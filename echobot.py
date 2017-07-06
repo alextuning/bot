@@ -3,22 +3,12 @@
 #
 # Simple Bot to reply to Telegram messages
 # This program is dedicated to the public domain under the CC0 license.
-"""
-This Bot uses the Updater class to handle the bot.
-
-First, a few handler functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-
-Usage:
-Basic Echobot example, repeats messages.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
+import telegram
 from subprocess import call
+from functools import wraps
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -26,43 +16,62 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-
 # Define a few command handlers. These usually take the two arguments bot and
 # update. Error handlers also receive the raised TelegramError object in error.
+
+LIST_OF_ADMINS = [285743410]
+
+def restricted(func):
+    @wraps(func)
+    def wrapped(bot, update, *args, **kwargs):
+        user_id = update.effective_user.id
+        if user_id not in LIST_OF_ADMINS:
+            print("Unauthorized access denied for {}.".format(user_id))
+            return
+        return func(bot, update, *args, **kwargs)
+    return wrapped
+
+@restricted
 def start(bot, update):
     update.message.reply_text("""/help - show current help
 /server - get server info
 /browse - get surveilance url""")
 
+@restricted
 def help(bot, update):
     update.message.reply_text("""/help - show current help
 /server - get server info
 /browse - get surveilance url""")
 
+@restricted
 def echo(bot, update):
    update.message.reply_text(update.message.text)
 
+@restricted
 def server(bot, update):
+    chat_id = update.message.chat_id
     try:
         # Script to collect info
-        call(["/root/status.sh"])
+        bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
+        call(["/root/dev/bot/status.sh"])
         # Script results
         status = open("/root/status.txt", "rb").read()
-        update.message.reply_text(status)
+        #update.message.reply_text(status)
+        bot.send_message(chat_id=chat_id, text=status, parse_mode=telegram.ParseMode.MARKDOWN)
     except Exception as e:
         logger.exception(str(e))
         update.message.reply_text('Ошибка при получении статуса сервера. Подробности в журнале.')
 
+@restricted
 def browse(bot, update):
     #call([])
-    #chat_id = bot.get_updates()[-1].message.chat_id
-    chat_id = 285743410
+    chat_id = update.message.chat_id
     update.message.reply_text('Here is a link to surveilance monitor: http://megaurl.com/')
     bot.send_photo(chat_id=chat_id, photo='http://www.andiar.com/1281-large_default/vinilo-bart-simpson-asomandose.jpg')
 
+@restricted
 def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
-
 
 def main():
     # Create the EventHandler and pass it your bot's token.
