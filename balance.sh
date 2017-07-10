@@ -6,5 +6,5 @@ balance="*Balance:*
 ----------------------
 $(tail -n1 /var/log/asterisk/ussd)
 "
-text=$(printf "$balance")
+text=$(printf "$balance" | sed 's/p.*/p./')
 printf '%s\n' "$text" > ${scrps_path}/balance.txt
