@@ -5,10 +5,10 @@
 # This program is dedicated to the public domain under the CC0 license.
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import logging
-import telegram
 from subprocess import call
 from functools import wraps
+import logging
+import telegram
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -35,13 +35,17 @@ def restricted(func):
 def start(bot, update):
     update.message.reply_text("""/help - show current help
 /server - get server info
-/browse - get surveilance url""")
+/browse - get surveilance url
+/balance - get balance info
+""")
 
 @restricted
 def help(bot, update):
     update.message.reply_text("""/help - show current help
 /server - get server info
-/browse - get surveilance url""")
+/browse - get surveilance url
+/balance - get balance info
+""")
 
 @restricted
 def echo(bot, update):
@@ -63,10 +67,24 @@ def server(bot, update):
         update.message.reply_text('Ошибка при получении статуса сервера. Подробности в журнале.')
 
 @restricted
+def balance(bot, update):
+    chat_id = update.message.chat_id
+    try:
+        # Script to collect info
+        bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
+        call(["/root/dev/bot/balance.sh"])
+        # Script results
+        balance = open("/root/balance.txt", "rb").read()
+        bot.send_message(chat_id=chat_id, text=balance, parse_mode=telegram.ParseMode.MARKDOWN)
+    except Exception as e:
+        logger.exception(str(e))
+        update.message.reply_text('Ошибка при получении баланса. Подробности в журнале.')
+
+@restricted
 def browse(bot, update):
     #call([])
     chat_id = update.message.chat_id
-    update.message.reply_text('Here is a link to surveilance monitor: http://megaurl.com/')
+    update.message.reply_text('Here is a link to surveilance monitor: https://silitus.ru:8443/')
     bot.send_photo(chat_id=chat_id, photo='http://www.andiar.com/1281-large_default/vinilo-bart-simpson-asomandose.jpg')
 
 @restricted
@@ -85,6 +103,7 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("server", server))
     dp.add_handler(CommandHandler("browse", browse))
+    dp.add_handler(CommandHandler("balance", balance))
     
 
     # on noncommand i.e message - echo the message on Telegram

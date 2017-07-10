@@ -4,9 +4,9 @@ scrps_path=/root
 
 info_web="*Services*
 ----------------------
-Apache2:
+*Apache2:*
 $(systemctl status apache2 | egrep -i 'active|tasks|memory' | awk '{print$1,$2,$9,$10}')
-Asterisk:
+*Asterisk:*
 $(systemctl status asterisk | egrep -i 'active|tasks|memory' | awk '{print$1,$2,$9,$10}')
 
 "
