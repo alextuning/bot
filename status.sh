@@ -1,6 +1,6 @@
 #!/bin/bash
 
-scrps_path=/root
+scrps_path=/tmp
 
 info_web="*Services*
 ----------------------

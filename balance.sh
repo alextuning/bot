@@ -1,5 +1,5 @@
 #!/bin/bash
-scrps_path=/root
+scrps_path=/tmp
 asterisk -rx 'dongle ussd dongle0 *105#'
 sleep 3
 balance="*Balance:*

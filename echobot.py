@@ -67,7 +67,7 @@ def server(bot, update):
         bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
         call(["/root/dev/bot/status.sh"])
         # Script results
-        status = open("/root/status.txt", "rb").read()
+        status = open("/tmp/status.txt", "rb").read()
         #update.message.reply_text(status)
         bot.send_message(chat_id=chat_id, text=status, parse_mode=telegram.ParseMode.MARKDOWN)
     except Exception as e:
@@ -82,7 +82,7 @@ def balance(bot, update):
         bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
         call(["/root/dev/bot/balance.sh"])
         # Print script results
-        balance = open("/root/balance.txt", "rb").read()
+        balance = open("/tmp/balance.txt", "rb").read()
         bot.send_message(chat_id=chat_id, text=balance, parse_mode=telegram.ParseMode.MARKDOWN)
     except Exception as e:
         logger.exception(str(e))
@@ -137,7 +137,7 @@ def status(bot, update):
         # Script to collect info
         bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
         call(['python', '/root/dev/bot/status.py'])
-	status = open("/root/status.txt", "rb").read()
+	status = open("/tmp/status.txt", "rb").read()
         # Script results
         bot.send_message(chat_id=chat_id, text=status, parse_mode=telegram.ParseMode.MARKDOWN)
         logging.info(message)
@@ -167,7 +167,7 @@ def heater_off(bot, update):
     try:
         # Script to collect info
         bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
-        call(['python', '/root/dev/bot/heater.py', 'off'])
+        call(['python', '/root/dev/bot/heater.py', 'cool'])
         # Script results
         bot.send_message(chat_id=chat_id, text=message, parse_mode=telegram.ParseMode.MARKDOWN)
         logging.info(message)
@@ -201,7 +201,7 @@ def main():
     dp.add_error_handler(error)
 
     # Start the Bot
-    updater.start_polling(read_latency=3)
+    updater.start_polling(read_latency=10)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
