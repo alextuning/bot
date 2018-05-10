@@ -106,7 +106,7 @@ def enable_zm(bot, update):
     try:
         # Script to collect info
         bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
-        call(['bash', '/root/dev/bot/enable_zm.sh', 'admin', 'Felix123@'])
+        call(['bash', '/root/dev/bot/enable_zm.sh', 'admin', 'Pass123'])
         # Script results
         bot.send_message(chat_id=chat_id, text=message, parse_mode=telegram.ParseMode.MARKDOWN)
         logging.info(message)
@@ -121,7 +121,7 @@ def disable_zm(bot, update):
     try:
         # Script to collect info
         bot.send_chat_action(chat_id=chat_id, action=telegram.ChatAction.TYPING)
-        call(['bash', '/root/dev/bot/disable_zm.sh', 'admin', 'Felix123@'])
+        call(['bash', '/root/dev/bot/disable_zm.sh', 'admin', 'Pass123'])
         # Script results
         bot.send_message(chat_id=chat_id, text=message, parse_mode=telegram.ParseMode.MARKDOWN)
         logging.info(message)
