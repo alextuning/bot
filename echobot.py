@@ -177,7 +177,7 @@ def heater_off(bot, update):
 
 def main():
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("425144783:AAFipL2EsnBn0kpgLZbtXV1LaZIQPuAeouw")
+    updater = Updater("")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
